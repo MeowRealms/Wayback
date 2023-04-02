@@ -1,7 +1,7 @@
 package com.ilummc.wayback.cmd;
 
 import com.ilummc.wayback.Wayback;
-import io.izzel.taboolib.module.locale.TLocale;
+import com.ilummc.wayback.util.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -36,15 +36,15 @@ public class CommandRegistry implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0)
             registries.values().stream().map(method -> method.getAnnotation(Handler.class))
-                    .forEach(handler -> TLocale.sendTo(sender, "USAGE", "/wayback " + handler.value(), TLocale.asString(handler.descriptor())));
+                    .forEach(handler -> Language.sendTo(sender, "USAGE", "/wayback " + handler.value(), Language.asString(handler.descriptor())));
         else {
             Map.Entry<Handler, Method> entry = registries.entrySet().stream().filter(en -> en.getKey().value().equals(args[0].toLowerCase()))
                     .findAny().orElse(null);
             if (entry == null || entry.getValue() == null) {
-                TLocale.sendTo(sender, "COMMANDS.UNKNOWN_SUB_COMMAND");
+                Language.sendTo(sender, "COMMANDS.UNKNOWN_SUB_COMMAND");
             } else {
                 if (!sender.hasPermission(entry.getKey().permission()) && sender != Bukkit.getConsoleSender()) {
-                    TLocale.sendTo(sender, "COMMANDS.NO_PERMISSION");
+                    Language.sendTo(sender, "COMMANDS.NO_PERMISSION");
                     return true;
                 }
                 Method method = entry.getValue();
@@ -54,7 +54,7 @@ public class CommandRegistry implements CommandExecutor {
                     method.invoke(null, newArg, sender);
                 } catch (IllegalAccessException ignored) {
                 } catch (InvocationTargetException e) {
-                    TLocale.sendTo(sender, "COMMANDS.ERROR_EXECUTE", e.getCause().getMessage());
+                    Language.sendTo(sender, "COMMANDS.ERROR_EXECUTE", e.getCause().getMessage());
                 }
             }
         }

@@ -1,6 +1,6 @@
 package com.ilummc.wayback.util;
 
-import io.izzel.taboolib.module.locale.TLocale;
+import com.ilummc.wayback.Wayback;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class Files {
         try {
             return String.join("\n", java.nio.file.Files.readAllLines(file.toPath(), charsets));
         } catch (IOException e) {
-            TLocale.Logger.error("FILE_READ_ERROR");
+            Wayback.logger().error("FILE_READ_ERROR");
             e.printStackTrace();
             return "";
         }
@@ -37,7 +37,7 @@ public class Files {
         try {
             java.nio.file.Files.write(target.toPath(), content.getBytes(charset));
         } catch (IOException e) {
-            TLocale.Logger.error("FILE_WRITE_ERROR");
+            Wayback.logger().error("FILE_WRITE_ERROR");
             e.printStackTrace();
         }
     }

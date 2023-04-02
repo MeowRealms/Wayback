@@ -3,9 +3,9 @@ package com.ilummc.wayback.schedules;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.ilummc.wayback.Wayback;
 import com.ilummc.wayback.WaybackCommand;
 import com.ilummc.wayback.WaybackConf;
-import io.izzel.taboolib.module.locale.TLocale;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -24,7 +24,7 @@ public class WaybackSchedules {
     public void shutdown() throws InterruptedException {
         executor.shutdownNow();
         while (executor.isTerminating()) {
-            TLocale.Logger.warn("AWAIT_TERMINATE");
+            Wayback.logger().warn("AWAIT_TERMINATE");
             WaybackCommand.printRunning();
             executor.awaitTermination(5000, TimeUnit.MILLISECONDS);
         }

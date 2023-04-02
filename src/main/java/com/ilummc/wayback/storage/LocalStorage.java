@@ -1,11 +1,11 @@
 package com.ilummc.wayback.storage;
 
 import com.google.common.collect.ImmutableList;
+import com.ilummc.wayback.Wayback;
 import com.ilummc.wayback.data.Breakpoint;
 import com.ilummc.wayback.util.Files;
 import com.ilummc.wayback.util.Jsons;
 import com.ilummc.wayback.util.Pair;
-import io.izzel.taboolib.module.locale.TLocale;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -42,7 +42,7 @@ public class LocalStorage implements ConfigurationSerializable, Storage {
                 new File(s).mkdirs();
                 return true;
             } catch (SecurityException e) {
-                TLocale.Logger.warn("FILE_LOCAL.SECURITY_DENIED");
+                Wayback.logger().warn("FILE_LOCAL.SECURITY_DENIED");
                 return false;
             }
         }).collect(Collectors.toList());

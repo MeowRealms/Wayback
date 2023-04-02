@@ -11,8 +11,8 @@ import com.ilummc.wayback.data.Breakpoint;
 import com.ilummc.wayback.storage.LocalStorage;
 import com.ilummc.wayback.storage.Storage;
 import com.ilummc.wayback.util.Jsons;
+import com.ilummc.wayback.util.Language;
 import com.ilummc.wayback.util.Reference;
-import io.izzel.taboolib.module.locale.TLocale;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -73,12 +73,12 @@ public class RollbackTask implements Task, ConfigurationSerializable {
 
     @Override
     public String detail() {
-        return TLocale.asString("ROLLBACK." + detail.getValue());
+        return Language.asString("ROLLBACK." + detail.getValue());
     }
 
     @Override
     public String name() {
-        return TLocale.asString("TASKS.ROLLBACK");
+        return Language.asString("TASKS.ROLLBACK");
     }
 
     @Override
@@ -116,7 +116,7 @@ public class RollbackTask implements Task, ConfigurationSerializable {
             System.gc();
 
             // unload all worlds to unlock map data files
-            TLocale.sendToConsole("ROLLBACK.PREPARE_DISABLE_WORLDS");
+            Language.sendToConsole("ROLLBACK.PREPARE_DISABLE_WORLDS");
             RollbackTask.syncTask(() ->
                     Bukkit.getWorlds().forEach(world -> {
                         try {
@@ -126,14 +126,14 @@ public class RollbackTask implements Task, ConfigurationSerializable {
                             Field dimensionF = worldServer.getClass().getDeclaredField("dimension");
                             int dimension = ((int) dimensionF.get(worldServer));
                             if (dimension <= 1)
-                                TLocale.Logger.warn("ROLLBACK.UNUNLOADABLE_WORLD", world.getName());
+                                Wayback.logger().warn("ROLLBACK.UNUNLOADABLE_WORLD", world.getName());
                         } catch (Exception ignored) {
                         }
                         Bukkit.unloadWorld(world, true);
                     }));
 
             // disable plugins
-            TLocale.sendToConsole("ROLLBACK.PREPARE_DISABLE_PLUGINS");
+            Language.sendToConsole("ROLLBACK.PREPARE_DISABLE_PLUGINS");
             RollbackTask.syncTask(() ->
                     {
                         for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
@@ -144,16 +144,19 @@ public class RollbackTask implements Task, ConfigurationSerializable {
             );
 
             // stop the world :D
-            Thread.getAllStackTraces().keySet().stream()
-                    .filter(thread -> !thread.getName().startsWith("Wayback Schedule"))
-                    .forEach(Thread::stop);
+            // Thread.getAllStackTraces().keySet().stream()
+            //        .filter(thread -> !thread.getName().startsWith("Wayback Schedule"))
+            //        .forEach(Thread::stop);
+
+            // stop the server
+            Bukkit.shutdown();
 
             // reset the output stream because the logger thread has been stopped
             System.setOut(new PrintStream(((OutputStream) Class.forName("org.fusesource.jansi.AnsiConsole")
                     .getDeclaredMethod("wrapOutputStream", OutputStream.class)
                     .invoke(null, new FileOutputStream(FileDescriptor.out)))));
 
-            TLocale.sendToConsole("ROLLBACK.PREPARE_DONE");
+            Language.sendToConsole("ROLLBACK.PREPARE_DONE");
             System.gc();
 
             LocalStorage str = fromStorage.get(0);
@@ -165,16 +168,16 @@ public class RollbackTask implements Task, ConfigurationSerializable {
             fromStorage.stream().map(storage -> storage.getExactly(time))
                     .filter(Objects::nonNull)
                     .forEach(breakpoint -> {
-                        TLocale.Logger.info("ROLLBACK.COLLECT");
+                        Wayback.logger().info("ROLLBACK.COLLECT");
                         Map<String, Object> diff = Breakpoint.makeDiff(backup.makeFileInfo(), breakpoint.getMap());
                         File base = new File(backup.getRoot());
-                        TLocale.Logger.info("ROLLBACK.DELETE");
+                        Wayback.logger().info("ROLLBACK.DELETE");
                         deleteFiles(diff, base);
                         List<String> list = Breakpoint.toPlain(diff);
                         diff.clear();
                         diff = null;
 
-                        TLocale.Logger.info("ROLLBACK.WRITE");
+                        Wayback.logger().info("ROLLBACK.WRITE");
                         fromStorage.forEach(storage -> storage.listAvailable().stream()
                                 .filter(bk -> breakpoint.getTime().compareTo(bk) >= 0)
                                 .forEach(prev -> {
@@ -189,20 +192,20 @@ public class RollbackTask implements Task, ConfigurationSerializable {
                                                         iterator.remove();
                                                         File target = new File(base, entry);
                                                         from.transferTo(entry, target);
-                                                        TLocale.Logger.fine("ROLLBACK.FILE_REPLACE", target.toString());
+                                                        Wayback.logger().fine("ROLLBACK.FILE_REPLACE", target.toString());
                                                     }
                                                 } catch (Exception ignored) {
-                                                    TLocale.Logger.warn("ROLLBACK.WRITE_ERR", entry);
+                                                    Wayback.logger().warn("ROLLBACK.WRITE_ERR", entry);
                                                 }
                                             }
                                         } catch (Exception ignored) {
-                                            TLocale.Logger.warn("ROLLBACK.OPEN_ERR", prevArchive.getName());
+                                            Wayback.logger().warn("ROLLBACK.OPEN_ERR", prevArchive.getName());
                                         }
                                     });
                                 }));
                     });
 
-            TLocale.sendToConsole("ROLLBACK.SUCCESS");
+            Language.sendToConsole("ROLLBACK.SUCCESS");
             Stats.increaseRecovery();
             Runtime.getRuntime().halt(0);
         }
@@ -213,7 +216,7 @@ public class RollbackTask implements Task, ConfigurationSerializable {
                 if (entry.getValue() == Breakpoint.Change.C) {
                     File file = new File(base, entry.getKey());
                     if (!file.delete()) file.deleteOnExit();
-                    TLocale.Logger.fine("ROLLBACK.FILE_DELETE", file.toString());
+                    Wayback.logger().fine("ROLLBACK.FILE_DELETE", file.toString());
                 } else if (entry.getValue() instanceof Map) {
                     deleteFiles(((Map) entry.getValue()), new File(base, entry.getKey()));
                 }

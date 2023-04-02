@@ -3,6 +3,7 @@ package com.ilummc.wayback.tasks;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.ilummc.wayback.Stats;
+import com.ilummc.wayback.Wayback;
 import com.ilummc.wayback.WaybackConf;
 import com.ilummc.wayback.backups.FileBackup;
 import com.ilummc.wayback.compress.Archive;
@@ -10,8 +11,8 @@ import com.ilummc.wayback.compress.Compressor;
 import com.ilummc.wayback.data.Breakpoint;
 import com.ilummc.wayback.policy.Policy;
 import com.ilummc.wayback.storage.LocalStorage;
+import com.ilummc.wayback.util.Language;
 import com.ilummc.wayback.util.WrapLong;
-import io.izzel.taboolib.module.locale.TLocale;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -108,7 +109,7 @@ class FullBackupFileLocalTransferTask implements Executable {
             if (entry.getValue().isJsonObject())
                 zip(path + entry.getKey() + "/", entry.getValue().getAsJsonObject(), archive);
             else {
-                TLocale.Logger.fine("FILE_LOCAL.ZIPPING_FILE", path + entry.getKey());
+                Wayback.logger().fine("FILE_LOCAL.ZIPPING_FILE", path + entry.getKey());
                 archive.write(path + entry.getKey(), backup.getInput(path + entry.getKey()));
                 progress += (1D / ((double) count)) * 0.65;
             }
@@ -146,12 +147,12 @@ class FullBackupFileLocalTransferTask implements Executable {
 
     @Override
     public String detail() {
-        return TLocale.asString("FILE_LOCAL." + detail, String.valueOf(count));
+        return Language.asString("FILE_LOCAL." + detail, String.valueOf(count));
     }
 
     @Override
     public String name() {
-        return TLocale.asString("TASKS.FILE_LOCAL_TRANSFER_NAME");
+        return Language.asString("TASKS.FILE_LOCAL_TRANSFER_NAME");
     }
 
 }

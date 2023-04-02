@@ -1,9 +1,9 @@
 package com.ilummc.wayback.storage;
 
 import com.google.common.collect.ImmutableList;
+import com.ilummc.wayback.Wayback;
 import com.ilummc.wayback.data.Breakpoint;
 import com.ilummc.wayback.util.Jsons;
-import io.izzel.taboolib.module.locale.TLocale;
 import it.sauronsoftware.ftp4j.FTPClient;
 import it.sauronsoftware.ftp4j.FTPException;
 import it.sauronsoftware.ftp4j.FTPIllegalReplyException;
@@ -53,7 +53,7 @@ public class FtpStorage implements ConfigurationSerializable, Storage {
             client.disconnect(true);
             return true;
         } catch (IOException | FTPIllegalReplyException e) {
-            TLocale.Logger.error("FTP.FTP_INIT_ERR", e.getLocalizedMessage());
+            Wayback.logger().error("FTP.FTP_INIT_ERR", e.getLocalizedMessage());
         } catch (FTPException e) {
             try {
                 if (e.getCode() == 550) {
@@ -61,7 +61,7 @@ public class FtpStorage implements ConfigurationSerializable, Storage {
                         client.disconnect(true);
                         return true;
                     } else {
-                        TLocale.Logger.error("FTP.NO_PERMISSION");
+                        Wayback.logger().error("FTP.NO_PERMISSION");
                         return false;
                     }
                 }

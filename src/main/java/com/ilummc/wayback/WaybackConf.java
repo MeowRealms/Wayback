@@ -12,7 +12,7 @@ import com.ilummc.wayback.tasks.RollbackTask;
 import com.ilummc.wayback.tasks.Task;
 import com.ilummc.wayback.util.Crypto;
 import com.ilummc.wayback.util.Files;
-import io.izzel.taboolib.module.locale.TLocale;
+import com.ilummc.wayback.util.Language;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -111,11 +111,11 @@ public class WaybackConf {
     }
 
     static void decrypt(CommandSender sender) {
-        if (!getConf().encrypted) throw new NullPointerException(TLocale.asString("COMMANDS.NOT_ENCRYPTED"));
+        if (!getConf().encrypted) throw new NullPointerException(Language.asString("COMMANDS.NOT_ENCRYPTED"));
         else {
             try {
                 save(loadPlainText(new AtomicBoolean(false)));
-                TLocale.sendTo(sender, "CONVERT_TO_UNENCRYPTED");
+                Language.sendTo(sender, "CONVERT_TO_UNENCRYPTED");
                 getConf().encrypted = false;
             } catch (IOException ignored) {
             }
@@ -123,12 +123,12 @@ public class WaybackConf {
     }
 
     static void encrypt(String password, CommandSender sender) {
-        if (getConf().encrypted) throw new NullPointerException(TLocale.asString("COMMANDS.ALREADY_ENCRYPTED"));
+        if (getConf().encrypted) throw new NullPointerException(Language.asString("COMMANDS.ALREADY_ENCRYPTED"));
         try {
             String content = load();
             content = Crypto.encrypt(content, password);
             save(content);
-            TLocale.sendTo(sender, "CONVERT_TO_ENCRYPTED");
+            Language.sendTo(sender, "CONVERT_TO_ENCRYPTED");
             getConf().encrypted = true;
         } catch (IOException e) {
             throw new NullPointerException(e.getLocalizedMessage());
@@ -148,12 +148,12 @@ public class WaybackConf {
             conf = new WaybackConf(configuration, enc.get());
         } catch (InvalidConfigurationException e) {
             e.printStackTrace();
-            TLocale.Logger.error("CORRUPTED_CONF");
+            Wayback.logger().error("CORRUPTED_CONF");
             try {
                 configuration.load(new BufferedReader(new InputStreamReader(WaybackConf.class.getResourceAsStream("/config.yml"))));
                 conf = new WaybackConf(configuration, enc.get());
             } catch (IOException | InvalidConfigurationException e1) {
-                TLocale.Logger.error("ERR_LOAD_DEFAULT_CONF");
+                Wayback.logger().error("ERR_LOAD_DEFAULT_CONF");
                 throw new NullPointerException();
             }
         }
@@ -182,7 +182,7 @@ public class WaybackConf {
             content = load();
             if (!content.contains("_")) {
                 enc.set(true);
-                TLocale.Logger.info("ENCRYPTED_CONF");
+                Wayback.logger().info("ENCRYPTED_CONF");
                 Optional<Thread> any = Thread.getAllStackTraces().keySet().stream()
                         .filter(thread -> "Server console handler".equals(thread.getName()))
                         .findAny();
@@ -194,16 +194,16 @@ public class WaybackConf {
                         if ("!!".equals(key)) {
                             content = cleanThenLoad();
                             enc.set(false);
-                            TLocale.Logger.info("USING_DEFAULT_CONF");
+                            Wayback.logger().info("USING_DEFAULT_CONF");
                             break;
                         }
                         decrypted = Crypto.decrypt(content, key);
                         if (decrypted.contains("_")) {
-                            TLocale.Logger.info("DECRYPTED");
+                            Wayback.logger().info("DECRYPTED");
                             content = decrypted;
                             break;
                         }
-                        TLocale.Logger.warn("INCORRECT_PASSWORD");
+                        Wayback.logger().warn("INCORRECT_PASSWORD");
                     }
                 } catch (Throwable ignored) {
                 } finally {
@@ -211,7 +211,7 @@ public class WaybackConf {
                 }
             }
         } catch (IOException e) {
-            TLocale.Logger.error("ERR_LOAD_CONF");
+            Wayback.logger().error("ERR_LOAD_CONF");
         }
         return content;
     }

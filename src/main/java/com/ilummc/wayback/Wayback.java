@@ -2,20 +2,12 @@ package com.ilummc.wayback;
 
 import com.ilummc.wayback.cmd.WaybackTabCompleter;
 import com.ilummc.wayback.schedules.WaybackSchedules;
-import io.izzel.taboolib.module.dependency.Dependency;
-import io.izzel.taboolib.module.locale.TLocale;
-import io.izzel.taboolib.module.locale.logger.TLogger;
+import com.ilummc.wayback.util.Language;
+import com.ilummc.wayback.util.logger.TLogger;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.java.JavaPlugin;
 
-
-@Dependency(maven = "it.sauronsoftware:ftp4j:1.7.2", mavenRepo = "https://bkm016.github.io/TabooLib/repo")
-//@Dependency(type = Dependency.Type.LIBRARY, maven = "net.sf.sevenzipjbinding:sevenzipjbinding:9.20-2.00beta")
-//@Dependency(type = Dependency.Type.LIBRARY, maven = "net.sf.sevenzipjbinding:sevenzipjbinding-all-platforms:9.20-2.00beta")
-@Dependency(maven = "commons-collections:commons-collections:3.2.2")
-@Dependency(maven = "org.codehaus.jackson:jackson-core-asl:1.9.13")
-@Dependency(maven = "org.codehaus.jackson:jackson-mapper-asl:1.9.13")
-@Dependency(maven = "net.lingala.zip4j:zip4j:1.3.2")
-public final class Wayback extends WaybackLibLoader {
+public final class Wayback extends JavaPlugin {
 
     private TLogger logger;
 
@@ -51,12 +43,12 @@ public final class Wayback extends WaybackLibLoader {
 
     public static boolean reload() {
         try {
-            instance().onStopping();
+            instance().onDisable();
             WaybackConf.getConf().cleanSchedules();
             WaybackSchedules.renew();
             Wayback.instance().reloadConfig();
-            TLocale.reload();
-            instance().onStarting();
+            Language.initialize();
+            instance().onEnable();
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -65,20 +57,21 @@ public final class Wayback extends WaybackLibLoader {
     }
 
     @Override
-    public void onLoading() {
+    public void onLoad() {
         instance = this;
-        logger = new TLogger("[{0}][{1}§f] {2}", instance(), TLogger.INFO);
+        Language.initialize();
+        logger = new TLogger("[{0}][{1}§f] {2}", instance(), TLogger.VERBOSE);
     }
 
     @Override
-    public void onStarting() {
+    public void onEnable() {
         if (!loaded)
             try {
                 DelegatedWayback.onEnable();
                 getCommand("wayback").setTabCompleter(new WaybackTabCompleter());
                 loaded = true;
             } catch (Throwable t) {
-                TLocale.Logger.fatal("ERR_LOAD_WAYBACK");
+                logger.fatal("ERR_LOAD_WAYBACK");
                 t.printStackTrace();
                 Bukkit.getPluginManager().disablePlugin(this);
             }
@@ -86,7 +79,7 @@ public final class Wayback extends WaybackLibLoader {
     }
 
     @Override
-    public void onStopping() {
+    public void onDisable() {
         while (disabling) {
             try {
                 Thread.sleep(50);

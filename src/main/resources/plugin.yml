@@ -1,7 +1,7 @@
 name: Wayback
 main: com.ilummc.wayback.Wayback
 
-version: @version@
+version: '${version}'
 
 authors: [IzzelAliz,sandtechnology]
 description: Wayback - Backup restore plugin

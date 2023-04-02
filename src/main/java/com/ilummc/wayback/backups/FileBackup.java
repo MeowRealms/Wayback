@@ -18,7 +18,6 @@ import java.util.Map;
 
 import static com.ilummc.wayback.util.Jsons.getJsonParser;
 
-
 @SerializableAs("File")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FileBackup implements ConfigurationSerializable, Backup {

@@ -1,7 +1,7 @@
 package com.ilummc.wayback;
 
 import com.google.gson.JsonObject;
-import io.izzel.taboolib.module.locale.TLocale;
+import com.ilummc.wayback.util.Language;
 import org.bukkit.Bukkit;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ public final class WaybackUpdater {
             try {
                 JsonObject fetch = fetch(GITHUB_API);
                 if (!Wayback.instance().getDescription().getVersion().equals(fetch.get("tag_name").getAsString())) {
-                    setUpdateMsg(TLocale.asString("UPDATER", fetch.get("tag_name").getAsString(),
+                    setUpdateMsg(Language.asString("UPDATER", fetch.get("tag_name").getAsString(),
                             fetch.get("name").getAsString(), fetch.get("body").getAsString()));
                 } else {
                     setUpdateMsg("");

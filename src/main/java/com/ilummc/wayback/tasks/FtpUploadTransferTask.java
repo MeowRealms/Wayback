@@ -3,7 +3,7 @@ package com.ilummc.wayback.tasks;
 import com.ilummc.wayback.policy.Policy;
 import com.ilummc.wayback.storage.FtpStorage;
 import com.ilummc.wayback.storage.LocalStorage;
-import io.izzel.taboolib.module.locale.TLocale;
+import com.ilummc.wayback.util.Language;
 import it.sauronsoftware.ftp4j.FTPClient;
 import it.sauronsoftware.ftp4j.FTPDataTransferListener;
 import it.sauronsoftware.ftp4j.FTPException;
@@ -136,12 +136,12 @@ class FtpUploadTransferTask implements Executable {
 
     @Override
     public String detail() {
-        return TLocale.asString("FTP." + detail, name, done.toString(), String.valueOf(size));
+        return Language.asString("FTP." + detail, name, done.toString(), String.valueOf(size));
     }
 
     @Override
     public String name() {
-        return TLocale.asString("TASKS.FTP_UPLOAD_NAME");
+        return Language.asString("TASKS.FTP_UPLOAD_NAME");
     }
 
 }

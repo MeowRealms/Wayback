@@ -15,7 +15,7 @@ import com.ilummc.wayback.storage.LocalStorage;
 import com.ilummc.wayback.tasks.RollbackTask;
 import com.ilummc.wayback.tasks.TransferTask;
 import com.ilummc.wayback.util.Files;
-import io.izzel.taboolib.module.locale.TLocale;
+import com.ilummc.wayback.util.Language;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.event.HandlerList;
@@ -28,7 +28,7 @@ import static com.ilummc.wayback.Wayback.instance;
 final class DelegatedWayback {
 
     static void onEnable() {
-        TLocale.sendToConsole("LOGO", instance().getDescription().getVersion());
+        Language.sendToConsole("LOGO", instance().getDescription().getVersion());
         registerSerializable();
         WaybackConf.init();
         CommandRegistry.init();
@@ -66,12 +66,12 @@ final class DelegatedWayback {
     }
 
     static void onDisable() {
-        TLocale.sendToConsole("LOGO", instance().getDescription().getVersion());
+        Language.sendToConsole("LOGO", instance().getDescription().getVersion());
         try {
             HandlerList.unregisterAll(instance());
             Wayback.getSchedules().shutdown();
         } catch (InterruptedException e) {
-            TLocale.Logger.error("TERMINATE_ERROR");
+            Wayback.logger().error("TERMINATE_ERROR");
         }
     }
 
