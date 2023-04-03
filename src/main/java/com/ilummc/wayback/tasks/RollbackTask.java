@@ -144,17 +144,18 @@ public class RollbackTask implements Task, ConfigurationSerializable {
             );
 
             // stop the world :D
-            // Thread.getAllStackTraces().keySet().stream()
-            //        .filter(thread -> !thread.getName().startsWith("Wayback Schedule"))
-            //        .forEach(Thread::stop);
+            Thread.getAllStackTraces().keySet().stream()
+                    .filter(thread -> !thread.getName().startsWith("Wayback Schedule"))
+                    .filter(thread -> !thread.getName().startsWith("Log4j2"))
+                    .forEach(Thread::stop);
 
             // stop the server
-            Bukkit.shutdown();
+            // Bukkit.shutdown();
 
             // reset the output stream because the logger thread has been stopped
-            System.setOut(new PrintStream(((OutputStream) Class.forName("org.fusesource.jansi.AnsiConsole")
-                    .getDeclaredMethod("wrapOutputStream", OutputStream.class)
-                    .invoke(null, new FileOutputStream(FileDescriptor.out)))));
+            // System.setOut(new PrintStream((PrintStream) (Class.forName("org.fusesource.jansi.AnsiConsole")
+            //        .getDeclaredMethod("out", PrintStream.class)
+            //        .invoke(null))));
 
             Language.sendToConsole("ROLLBACK.PREPARE_DONE");
             System.gc();
