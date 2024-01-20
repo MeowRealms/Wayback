@@ -1,11 +1,11 @@
 name: Wayback
 main: com.ilummc.wayback.Wayback
-
 version: '${version}'
 
 authors: [IzzelAliz,sandtechnology]
 description: Wayback - Backup restore plugin
-website: https://github.com/IzzelAliz/Wayback
+website: https://github.com/MeowRealms/Wayback
+api-version: 1.13
 permissions:
   wayback.default:
     default: true

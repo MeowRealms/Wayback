@@ -59,6 +59,7 @@ public final class Wayback extends JavaPlugin {
     @Override
     public void onLoad() {
         instance = this;
+        Environment.check();
         Language.initialize();
         logger = new TLogger("[{0}][{1}§f] {2}", instance(), TLogger.VERBOSE);
     }

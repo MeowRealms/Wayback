@@ -30,7 +30,8 @@ public class RetryPolicy implements ConfigurationSerializable, Policy {
     }
 
     @Override
-    public void accept(Executable task) {
+    public void
+    accept(Executable task) {
     }
 
     @Override

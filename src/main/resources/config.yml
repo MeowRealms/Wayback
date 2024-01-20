@@ -1,5 +1,4 @@
 pool_size: 1
-checkUpdate: true
 storages:
   local_storage:
     ==: LocalStorage
@@ -14,8 +13,6 @@ storages:
 #   user: test
 #   password: test
 #   root: '/usr/share/wayback-backups'
-# onedrive:
-#   ==: OneDrive
 compressor:
   - ==: zip
     level: 9
@@ -27,23 +24,23 @@ backups:
     root: './'
     excludes:
       - 'WaybackBackups'
+      - 'assets'
+      - 'cache'
+      - 'libraries'
+      - 'libs'
       - 'logs'
+      - 'session.lock'
     skip_large_file: true
     large_file: 64.000
     incremental: true
-#  sql_backup:
-#    ==: SQL
-#    jdbcUrl: 'jdbc:mysql://127.0.0.1/db'
-#    user: root
-#    password: root
-#    incremental: true
 policies:
   clean_oldest:
     ==: CleanOldest
-    target: local_storage
   clean_latest:
     ==: CleanLatest
-    target: local_storage
+  clean_exceed:
+    ==: CleanExceed
+    max_backups: 10
   abandon:
     ==: Abandon
   retry3:

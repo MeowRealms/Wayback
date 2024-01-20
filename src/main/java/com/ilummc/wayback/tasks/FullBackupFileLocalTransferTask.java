@@ -2,7 +2,6 @@ package com.ilummc.wayback.tasks;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.ilummc.wayback.Stats;
 import com.ilummc.wayback.Wayback;
 import com.ilummc.wayback.WaybackConf;
 import com.ilummc.wayback.backups.FileBackup;
@@ -15,6 +14,7 @@ import com.ilummc.wayback.util.Language;
 import com.ilummc.wayback.util.WrapLong;
 
 import java.io.File;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -93,7 +93,6 @@ class FullBackupFileLocalTransferTask implements Executable {
         }
         reset();
         if (next != null) next.create().schedule().addToQueue();
-        Stats.increaseBackup();
     }
 
     private void reset() {
@@ -110,7 +109,9 @@ class FullBackupFileLocalTransferTask implements Executable {
                 zip(path + entry.getKey() + "/", entry.getValue().getAsJsonObject(), archive);
             else {
                 Wayback.logger().fine("FILE_LOCAL.ZIPPING_FILE", path + entry.getKey());
-                archive.write(path + entry.getKey(), backup.getInput(path + entry.getKey()));
+                try (InputStream is = backup.getInput(path + entry.getKey())) {
+                    archive.write(path + entry.getKey(), is);
+                }
                 progress += (1D / ((double) count)) * 0.65;
             }
         }

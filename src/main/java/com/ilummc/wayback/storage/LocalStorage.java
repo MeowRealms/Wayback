@@ -60,7 +60,7 @@ public class LocalStorage implements ConfigurationSerializable, Storage {
     }
 
 
-    private Stream<Pair<File, LocalDateTime>> getFilesStream() {
+    public Stream<Pair<File, LocalDateTime>> getFilesStream() {
         return root.stream()
                 .map(File::new)
                 .filter(f -> f.isDirectory() && f.listFiles() != null)
@@ -85,6 +85,12 @@ public class LocalStorage implements ConfigurationSerializable, Storage {
     public Optional<File> latestZip() {
         return getFilesStream()
                 .max(Comparator.comparing(Pair::getValue))
+                .flatMap(pair -> Optional.of(pair.getKey()));
+    }
+
+    public Optional<File> oldestZip() {
+        return getFilesStream()
+                .min(Comparator.comparing(Pair::getValue))
                 .flatMap(pair -> Optional.of(pair.getKey()));
     }
 

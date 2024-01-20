@@ -98,3 +98,5 @@ ROLLBACK:
   FILE_DELETE: '删除 {0} 文件'
   FILE_REPLACE: '替换 {0} 文件'
   UNUNLOADABLE_WORLD: '世界 {0} 为默认的世界，由于 Bukkit 的限制，该世界无法卸载，回滚可能不会对该世界生效'
+POLICY:
+  FILE_DELETE_FAIL: '无法删除文件: {0}'

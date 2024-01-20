@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.stream.JsonWriter;
+import com.ilummc.wayback.Wayback;
 import com.ilummc.wayback.util.Hash;
 import com.ilummc.wayback.util.Jsons;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -69,13 +70,12 @@ public class FileBackup implements ConfigurationSerializable, Backup {
             File[] list = base.listFiles();
             if (list != null) {
                 for (File file : list) {
-                    if (!excludes.contains(file.getName())) {
-                        if (file.isDirectory()) {
-                            writer.name(file.getName()).beginObject();
-                            eachMake(file, writer);
-                            writer.endObject();
-                        } else makeSingle(file, file.getName(), writer);
-                    }
+                    if (excludes.contains(file.getName())) continue;
+                    if (file.isDirectory()) {
+                        writer.name(file.getName()).beginObject();
+                        eachMake(file, writer);
+                        writer.endObject();
+                    } else makeSingle(file, file.getName(), writer);
                 }
             }
             writer.endObject();
@@ -95,6 +95,7 @@ public class FileBackup implements ConfigurationSerializable, Backup {
         if (list != null) {
             for (String s : list) {
                 File file = new File(base, s);
+                if (excludes.contains(file.getName())) continue;
                 if (file.isDirectory()) {
                     writer.name(s).beginObject();
                     eachMake(file, writer);
@@ -105,6 +106,7 @@ public class FileBackup implements ConfigurationSerializable, Backup {
     }
 
     private void makeSingle(File file, String s, JsonWriter writer) throws IOException {
+        if (excludes.contains(file.getName())) return;
         if (file.length() < getLargeFile())
             writer.name(s).beginArray()
                     .value(Hash.hashFile(file)).value(file.length())

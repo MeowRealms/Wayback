@@ -1,7 +1,6 @@
 package com.ilummc.wayback.tasks;
 
 import com.google.common.collect.ImmutableMap;
-import com.ilummc.wayback.Stats;
 import com.ilummc.wayback.Wayback;
 import com.ilummc.wayback.WaybackConf;
 import com.ilummc.wayback.backups.FileBackup;
@@ -207,7 +206,6 @@ public class RollbackTask implements Task, ConfigurationSerializable {
                     });
 
             Language.sendToConsole("ROLLBACK.SUCCESS");
-            Stats.increaseRecovery();
             Runtime.getRuntime().halt(0);
         }
 
